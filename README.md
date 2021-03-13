@@ -1,7 +1,8 @@
+[![PMFuzz](https://github.com/Systems-ShiftLab/pmfuzz/actions/workflows/python-app.yml/badge.svg)](https://github.com/Systems-ShiftLab/pmfuzz/actions/workflows/python-app.yml)
+
 # PMFuzz
 
-For most up-to-date version of PMFuzz please go to
-[https://github.com/Systems-ShiftLab/pmfuzz](https://github.com/Systems-ShiftLab/pmfuzz).
+PMFuzz is a testcase generation tool to generate high-value tests cases for PM testing tools (XFDetector, PMDebugger
 
 If you find PMFuzz useful in your research, please cite:
 
@@ -10,7 +11,7 @@ If you find PMFuzz useful in your research, please cite:
 > The International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS), 2021
 
 
-<details><summary>BibTex</summary>
+<details><summary>*BibTex*</summary>
 <p>
 
 ```
@@ -66,7 +67,10 @@ Run `make docs` from the root, and all the documentation will be
 linked in the `docs/` directory.
 
 ## Running custom configuration
-PMFuzz uses a YML based configuration to set different parameters for fuzzing, to write a custom configuration, please follow one of the existing examples in [src/pmfuzz/configs/examples/][config_examples] directory.
+PMFuzz uses a YML based configuration to set different parameters for
+fuzzing, to write a custom configuration, please follow one of the
+existing examples in [src/pmfuzz/configs/examples/][config_examples]
+directory.
 
 More information on PMFuzz's syntax is [here][1].
 
@@ -103,7 +107,23 @@ Run:
 ```
 ipcrm -a
 ```
-Warning: This removes all user owned shared memory segments, don't run with superuser privilege or on a machine with other critical applications running.
+
+Warning: This removes all user owned shared memory segments, don't run
+with superuser privilege or on a machine with other critical
+applications running.
+
+
+## Licensing
+PMFuzz is licensed under BSD-3-clause except noted otherwise.
+
+PMFuzz uses of the following open-source software:
+1. Preeny (Copy of
+   [license](https://github.com/zardus/preeny/blob/ef63823020f373b3729a14ee4106b45eefa3271c/LICENSE))
+   Preeny was modified to fix a bug in desock. All changes are
+   contained in
+   [vendor/pathes/preeny_path](vendor/patches/preeny.git_patch)
+2. AFL++ (Copy of [license](vendor/AFLplusplus-2.63c/LICENSE)) AFL++ was modified to include support for
+   persistent memory tracking for PMFuzz.
 
 [config_examples]: src/pmfuzz/configs/examples/
 [pmfuzz-fuzz.py]: src/pmfuzz/pmfuzz-fuzz.py
