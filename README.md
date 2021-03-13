@@ -32,7 +32,7 @@ PMFuzz was tested using the following environment configuration, other versions 
 2. NDCTL v64 or higher
 3. libunwind (`libunwind-dev`)
 4. libini-config (`libini-config-dev`)
-5. Python 3.6
+5. Python 3.8
 6. GNUMake >= 3.82
 7. Kernel version 5.4
 8. Anaconda or virtualenv (recommended)
