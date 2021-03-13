@@ -1,24 +1,45 @@
 # PMFuzz
 
+For most up-to-date version of PMFuzz please go to
+[https://github.com/Systems-ShiftLab/pmfuzz](https://github.com/Systems-ShiftLab/pmfuzz).
+
+If you find PMFuzz useful in your research, please cite:
+
+> Sihang Liu, Suyash Mahar, Baishakhi Ray, and Samira Khan  
+> [PMFuzz: Test Case Generation for Persistent Memory Programs](https://www.cs.virginia.edu/~smk9u/Liu_PMFuzz_ASPLOS21.pdf)  
+> The International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS), 2021
+
+
+<details><summary>BibTex</summary>
+<p>
+
+```
+@inproceedings{liu2021pmfuzz,
+  title={PMFuzz: Test Case Generation for Persistent Memory Programs},
+  author={Liu, Sihang and Mahar, Suyash and Ray, Baishakhi and Khan, Samira},
+  booktitle={Proceedings of the Twenty-sixth International Conference on Architectural Support for Programming Languages and Operating Systems},
+  year={2021}
+}
+```
+
+</p>
+</details>
+
 ## Dependencies
-To compile, you'd need to install the following dependencies (instructions in the next step):  
-1. Ubuntu 18.04¹
+PMFuzz was tested using the following environment configuration, other versions may work:  
+1. Ubuntu 18.04
 2. NDCTL v64 or higher
 3. libunwind (`libunwind-dev`)
 4. libini-config (`libini-config-dev`)
 5. Python 3.6
 6. GNUMake >= 3.82
-7. Bash >= 4.0¹ (For workload scripts)
-8. Kernel version 5.4²
-9. autoconf (For PMDK)
-10. bash-completions (For PMDK)
-
-¹Required for workload scripts  
-²Required for the evaluation configuration  
+7. Kernel version 5.4
+8. Anaconda or virtualenv (recommended)
 
 For compiling documentation:  
 1. doxygen
 2. pdflatex
+3. doxypypy
 
 ## Compiling AFL and workloads
 #### Step 1: Install PMDK and other dependencies
@@ -43,20 +64,6 @@ pip3 install -r src/pmfuzz/requirements.txt
 ## Compiling Documentation
 Run `make docs` from the root, and all the documentation will be
 linked in the `docs/` directory.
-
-## Running workloads
-To Run the workloads, use the `run-workloads.sh` script, e.g.,
-
-```shell
-# For running btree in baseline mode  
-scripts/run-workloads.sh btree baseline
-# For running btree in pmfuzz mode
-scripts/run-workloads.sh btree pmfuzz
-# To see all the options, run:
-scripts/run-workloads.sh --help
-```
-
-These commands will run pmfuzz [pmfuzz-fuzz.py][pmfuzz-fuzz.py] with correct configuration used for the evaluation section, you might need to change the number of cores to adjust it for your machine.
 
 ## Running custom configuration
 PMFuzz uses a YML based configuration to set different parameters for fuzzing, to write a custom configuration, please follow one of the existing examples in [src/pmfuzz/configs/examples/][config_examples] directory.
