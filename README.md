@@ -114,12 +114,12 @@ applications running.
 PMFuzz is licensed under BSD-3-clause except noted otherwise.
 
 PMFuzz uses of the following open-source software:
-1. Preeny (Copy of
-   [license](https://github.com/zardus/preeny/blob/ef63823020f373b3729a14ee4106b45eefa3271c/LICENSE))
+1. Preeny ([license](https://github.com/zardus/preeny/blob/ef63823020f373b3729a14ee4106b45eefa3271c/LICENSE))  
    Preeny was modified to fix a bug in desock. All changes are
    contained in
    [vendor/pathes/preeny_path](vendor/patches/preeny.git_patch)
-2. AFL++ (Copy of [license](vendor/AFLplusplus-2.63c/LICENSE)) AFL++ was modified to include support for
+2. AFL++ ([license](vendor/AFLplusplus-2.63c/LICENSE))  
+   AFL++ was modified to include support for
    persistent memory tracking for PMFuzz.
 
 [config_examples]: src/pmfuzz/configs/examples/
