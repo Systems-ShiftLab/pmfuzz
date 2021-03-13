@@ -1,0 +1,35 @@
+# Brief:
+#   Runs the whole PMFuzz package for hashmap_tx
+
+pmfuzz:
+  progress_file: "/tmp/complete.log"
+  stage:
+    "1":
+      cores: 20
+    "2":
+      enable: Yes
+      cores: 10
+      tc_timeout:  600 # sec
+    dedup:
+      global:
+        fdedup: 'pm_map'
+        minimize_tc: No
+        minimize_corpus: Yes
+      local:
+        minimize_tc: No # TODO: Yes version not implemented
+        minimize_corpus: Yes
+      
+  failure_injection: 
+    enable: Yes
+
+# Configure the fuzzing target
+target:
+  tmout: "500"
+  env:
+    ENABLE_PM_PATH: "1"
+    AFL_NO_FORKSRV: "1"
+    PRIMITIVE_BASELINE_MODE: "1"
+
+afl:
+  prioritize_pm_path: 
+    enable: Yes

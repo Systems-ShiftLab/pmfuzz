@@ -1,0 +1,7 @@
+# Brief:
+#   Runs the Baseline for rbtree
+
+include:
+  - configs/base.yml
+  - configs/workload/mapcli.rbtree.yml
+  - configs/run_configs/baseline.yml

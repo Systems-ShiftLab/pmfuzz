@@ -1,0 +1,376 @@
+.TH PMFuzz "1" Manual
+.SH NAME
+pmfuzz-fuzz
+.SH SYNOPSIS
+.B pmfuzz-fuzz
+[-h] [--force-resp FORCE_RESP] [--cores-stage1 CORES_STAGE1] [--cores-stage2 CORES_STAGE2] [--overwrite] [--disable-stage2] [--dry-run] [--progress-interval PROGRESS_INTERVAL] [--progress-file PROGRESS_FILE] [--checks-only] [--verbose] [--version] indir outdir config
+.SH DESCRIPTION
+PMFuzz: A Persistent Memory Fuzzer, version 1.0 by ShiftLab
+
+.SH OPTIONS
+
+
+.TP
+\fBindir\fR
+path to directory containing initial test corpus for stage 1. See \fI\%INPUT\-DIRECTORY\fR.
+
+.TP
+\fBoutdir\fR
+path to directory for generated test cases for stage 1, works as input for stage 2.  See \fI\%OUTPUT\-DIRECTORY\fR.
+
+.TP
+\fBconfig\fR
+Points to the config file to use, should conform to: configs/default.yaml. See \fI\%CONFIGURATION\-FILE\fR.
+
+.TP
+\fB\-\-force\-resp\fR \fI\,FORCE_RESP\/\fR
+Forces response to questions
+
+.TP
+\fB\-\-cores\-stage1\fR \fI\,CORES_STAGE1\/\fR, \fB\-c1\fR \fI\,CORES_STAGE1\/\fR
+Maximum cores stage 1 fuzzer can use, default: 1. Can be specified in config.
+
+.TP
+\fB\-\-cores\-stage2\fR \fI\,CORES_STAGE2\/\fR, \fB\-c2\fR \fI\,CORES_STAGE2\/\fR
+Maximum cores stage 2 fuzzer can use, default: 1. Can be specified in config.
+
+.TP
+\fB\-\-overwrite\fR, \fB\-o\fR
+Overwrite the output directory
+
+.TP
+\fB\-\-disable\-stage2\fR, \fB\-1\fR
+Disables stage 2.  Can be specified in config.
+
+.TP
+\fB\-\-dry\-run\fR
+Enables dry run, no actual commands are executed (Deprecated)
+
+.TP
+\fB\-\-progress\-interval\fR \fI\,PROGRESS_INTERVAL\/\fR
+Interval in seconds for recording progress, default: 60 seconds.  Can be specified in config.
+
+.TP
+\fB\-\-progress\-file\fR \fI\,PROGRESS_FILE\/\fR
+Output file for writing progress to a file. Can be specified in config.
+
+.TP
+\fB\-\-checks\-only\fR
+Performs startup checks and exits
+
+.TP
+\fB\-\-verbose\fR, \fB\-v\fR
+Enables verbose logging to stdout
+
+.TP
+\fB\-\-version\fR
+show program's version number and exit
+
+.SH "EXAMPLES"
+To run PMFuzz without any additional output:
+.IP "" 4
+.nf
+pmfuzz\-fuzz \e
+    \./input_directory \./output_directory \./configs/default\.yml
+.fi
+.IP "" 0
+.P
+To record fuzzing progress, use:
+.IP "" 4
+.nf
+pmfuzz\-fuzz \e
+    \-\-progress\-file=/tmp/fuzz_progress
+    \./input_directory \./output_directory \./configs/default\.yml
+.fi
+.IP "" 0
+.P
+To get verbose output of the PMFuzz\'s current step, use:
+.IP "" 4
+.nf
+pmfuzz\-fuzz \e
+    \-\-verbose \e
+    \./input_directory \./output_directory \./configs/default\.yml
+.fi
+.IP "" 0
+.SH "INPUT DIRECTORY"
+PMFuzz needs a non-empty directory with seed inputs for fuzzing. These
+inputs should be command inputs that PMFuzz can execute using the
+target program. PMFuzz directly uses these inputs using AFL, see
+afl-fuzz(1) .
+
+.SH "OUTPUT DIRECTORY"
+On each run, pmfuzz will write to the following files
+.IP "1." 4
+\fB<output_dirname>/\fR: Contains all the testcases, pool images, crash sites and other information needed to run PMFuzz\.
+.IP "2." 4
+\fB<output_dirname>\.progress\fR: Tracks the progress of the fuzzing\.
+.IP "3." 4
+\fB<output_dirname>\.progress\.events\fR: Tracks events like stage transitions in PMFuzz\.
+.IP "" 0
+.SS "Output Directory Structure"
+The output directory has the following structure
+.IP "" 4
+.nf
+  output directory name
+      +\-\- @info
+      +\-\- @dedup
+      |    +\-\- id=001\.pm_pool
+      |    +\-\- id=001\.testcase
+      |    +\-\- id=001\.min\.testcase
+      |    +\-\- \|\.\|\.\|\.
+      +\-\- stage=1,iter=0
+      |    +\-\- afl\-results
+      |    |    +\-\- master_fuzzer
+      |    |        +\-\- queue
+      |    |    +\-\- slave_fuzzer01
+      |    |    +\-\- \|\.\|\.\|\.
+      |    +\-\- testcases
+      |    |    +\-\- id=001\.testcase
+      |    |    +\-\- \|\.\|\.\|\.
+      |    +\-\- pm_images
+      |    |    +\-\- id=001\.pm_pool
+      |    |    +\-\- \|\.\|\.\|\.
+      |    +\-\- @dedup_sync
+      |         +\-\- id=001\.pm_pool
+      |         +\-\- id=001\.testcase
+      |         +\-\- id=001\.timer
+      |         +\-\- \|\.\|\.\|\.
+      +\-\- stage=2,iter=1
+           +\-\- afl\-results
+           |    +\-\- id=0001/master_fuzzer/queue
+           |    +\-\- id=0002/master_fuzzer/queue
+           |    +\-\- \|\.\|\.\|\.
+           +\-\- testcases
+           |    +\-\- id=0001,id=001\.testcase
+           |    +\-\- \|\.\|\.\|\.
+           |    +\-\- id=0002,id=002\.testcase
+           |    +\-\- \|\.\|\.\|\.
+           +\-\- pm_images
+           |    +\-\- id=0001,id=001\.pm_pool
+           |    +\-\- \|\.\|\.\|\.
+           |    +\-\- id=0002,id=001\.pm_pool
+           |    +\-\- \|\.\|\.\|\.
+           +\-\- @dedup_sync
+                +\-\- id=001\.pm_pool
+                +\-\- id=001\.testcase
+                +\-\- id=001\.timer
+                +\-\- \|\.\|\.\|\.
+.fi
+.IP "" 0
+.SS "Progress Report"
+The output directory is co\-located with progress file with the same name as the output directory but has an file\-extension of type \'\fB\.progress\fR\'\. The columns represent the following values, in\-order they appear:
+.IP "" 4
+.nf
+Current time, Total testcases, Total PM testcases, Total paths, Total
+PM paths, Executions/s, internal\-execution\-parameter
+.fi
+.IP "" 0
+.SS "Naming Convention"
+Each testcase/pm_image/crash_site name is a sequence of one or more id\-tags\. Each id\-tag is of the format \fBid=<value>\fR and a sequence of id\-tags are connected using the characters \fB\.\fR or \fB,\fR\. If an id\-tag is after \'\fB\.\fR\' this means that the id\-tag corresponds to a failure image, while if an id\-tag starts with \'\fB,\fR\', then that id\-tag is for a PMFuzz generated testcase\.
+.P
+If a testcase has multiple IDs, they move down the hierarchy from left to right\. An example fuzzing round and corresponding file name are:
+.P
+PMFuzz marks all the testcases in the input directory with a unique sequential id starting from 1:
+.IP "1." 4
+Initial testcases: \fBid=000001\.testcase\fR, \fBid=000002\.testcase\fR \|\.\|\.\|\.
+.IP "2." 4
+Next round of fuzzing uses the second testcase \fBid=000002\.testcase\fR to generate 5 new testcases, these testcases will now be named:
+.br
+\fBid=000002,id=000001\.testcase\fR
+.br
+\fBid=000002,id=000002\.testcase\fR
+.br
+\fBid=000002,id=000003\.testcase\fR
+.br
+\fBid=000002,id=000004\.testcase\fR
+.br
+\fBid=000002,id=000005\.testcase\fR
+.IP "3." 4
+Next, PMFuzzes uses the testcase \fBid=00002,id=00003\.testcase\fR to randomly generate the following crash sites:
+.br
+\fBid=000002,id=000002\.id=000011\.testcase\fR
+.br
+\fBid=000002,id=000002\.id=000035\.testcase\fR
+.br
+(note the use of both kinds separator)
+.IP "" 0
+.P
+Example testcase/pm_pool/crash_site names:
+.br
+* \fBid=000000,id=000199,id=00088\.testcase\fR
+.br
+* \fBid=002310\.id=000033mid=000002,id=000002\.id=000035_pool\fR
+.br
+* \fBmap_id=000002,id=010199\.id=000004\.id=000002\.testcase\fR
+.SH "CONFIGURATION FILES"
+PMFuzz uses a YAML based file to configure different parameters\.
+.P
+\fBconfigs/examples\fR directory contains several examples for writing and organizing configurations that PMFuzz can use\. If you want to write your own configuration file, include \fBconfig/default\.yml\fR in your new config file and change the values you need\.
+.P
+If you are writing your own configuration, please note the following:
+.SS "Including Other Configs"
+PMFuzz supports including one or more configuration files to allow easier customization\.
+.P
+Syntax for including config files is:
+.IP "" 4
+.nf
+include:
+  \- base\-config\-1\.yaml
+  \- base\-config\-2\.yaml
+  \.
+  \.
+  \- base\-config\-n\.yaml
+.fi
+.IP "" 0
+.P
+In case of duplicate keys, values are prioritized (and overwritten) in the order they appear\. However, the file including them have highest priority\.
+.P
+\fBNote\fR
+.br
+Nested includes are not supported\.
+.SS "Variable Substitution"
+The following variables are automatically substituted in the config file values:
+.P
+\fB%ROOT%\fR
+.br
+Points to the PMFuzz root directory (root of this repository)
+.P
+\fB%BUILD%\fR
+.br
+Points to the %ROOT%/build/
+.P
+\fB%LIB%\fR
+.br
+Points to the %ROOT%/build/lib
+.P
+\fB%BIN%\fR
+.br
+Points to the %ROOT%/build/bin
+.SS "Example"
+Here is a simple example that runs PMDK\'s RBTree workload in baseline mode\. This configuration overwrites the number of CPU cores used by the first stage to 4\. Note, lines starting with \fB#\fR are comments\.
+.IP "" 4
+.nf
+# Brief:
+#   Runs the Baseline for rbtree
+
+include:
+  \- configs/base\.yml
+  \- configs/workload/mapcli\.rbtree\.yml
+  \- configs/run_configs/baseline\.yml
+
+pmfuzz:
+  stage:
+    "1":
+      cores: 4
+.fi
+.IP "" 0
+.SH "ENVIRONMENT"
+This section defines several environment variables that may change PMFuzz\'s behavior\.
+.P
+Values \fBset\fR and \fBunset\fR describe the behavior when the environment variable is not set to any value and when the variable is set to any non\-empty string (including \fB0\fR) respectively\.
+.SS "USE_FAKE_MMAP"
+\fB1\fR
+.br
+Enables fake mmap by copying the contents (using \fBmemcpy\fR) of the pool image to the volatile memory\. Mounting the pool to the volatile memory improves fuzzing performance\.
+.P
+\fB0\fR
+.br
+Mounts the pool using PMDK\'s default mounting functions\. Before invoking the target, PMFuzz would create a copy of the pool image and call the target on that image\. Depending on the output of the fuzzing,PMFuzz would either save that image for future use, or discard it\.
+.SS "PMEM_MMAP_HINT"
+\fBaddr\fR
+.br
+Address of the mount point of the pool\. See libpmem(7)\.
+.P
+\fBunset\fR
+.br
+PMDK decides the mount address of the pool\.
+.SS "ENABLE_CNST_IMG"
+\fB1\fR
+.br
+Disables default PMDK\'s behaviour that generates non\-identical images for same input\.
+.br
+\fB0\fR
+.br
+PMFuzz generated images would have random variations that may negatively affect the fuzzing performance and reproducibility\.
+.SS "FI_MODE"
+\fB"IMG_GEN"\fR
+.br
+In case the the PMFUZZ_MODE env variable is set to "IMG_GEN", a failure point is injected and the PM Image is dumped if the PM pool has changed since the last failure injection\. First failure injection always results in an image dump\.
+.P
+Images dump naming pattern: \fB<pool file name>\.<failure id>\fR If a failure list file is additionally specified using the env variable, the falure ids that generate dumps are written to that file, one per line\.
+.P
+\fB"IMG_REP"\fR
+.br
+Todo
+.P
+For more information on FI_MODE see libpmfuzz\.c\.
+.SS "FAILURE_LIST"
+Path to a file that libpmfuzz would write the failure IDs to\.
+.P
+See libpmfuzz\.c
+.SS "PMFUZZ_DEBUG"
+\fB1\fR
+.br
+Enables debug output from libpmfuzz\.
+.P
+\fB0\fR
+.br
+\fBunset\fR
+.br
+Disables debug output from libpmfuzz\.
+.SS "ENABLE_PM_PATH"
+Enables deep paths in PMFuzz
+.SS "GEN_ALL_CS"
+Forces PMFuzz to generate all crash sites. Use with caution.
+.SS "IMG_CREAT_FINJ"
+Deprecated.
+.SS "PMFUZZ_SKIP_TC_CHECK"
+\fBset\fR
+.br
+Disable testcase size check in AFL++\.
+.P
+\fBunset\fR
+.br
+Enables AFL++\'s default behaviour to check testcase size\.
+.P
+See afl\-fuzz(1)\.
+.SS "PRIMITIVE_BASELINE_MODE"
+\fBset\fR
+.br
+Makes workload delete image on start if the pool exists\.
+.SH "COMMON ERRORS"
+.SS "FileNotFoundError for instance\'s pid file"
+Raised when AFL cannot bind to a free core or no core is free\.
+.SS "Random tar command failed"
+Check if device has any free space left\.
+.SS "shmget (2): No space left on device"
+Run the following command in your shell to remove all shared memory segments:
+.IP "" 4
+.nf
+$ ipcrm \-a
+.fi
+.IP "" 0
+.P
+Warning: This removes all user owned shared memory segments, don\'t run with superuser privilege or on a machine with other critical applications running\.
+.SH "PROGRAMMING PMFUZZ"
+To modify pmfuzz please look into \fBdocs/programming_manual\fR or \fBdocs/programming_manual\.pdf\fR\.
+
+
+.SH BUGS
+Please report bugs at:
+.UR https://github.com/Systems-ShiftLab/pmfuzz/issues
+.UE
+
+.SH SEE ALSO
+pmfuzz(7), afl-fuzz(1), afl-cmin(1), afl-tmin(1), afl-gotcpu(1)
+
+.SH AUTHORS
+.B PMFuzz
+was written by ShiftLab, University of Virginia.
+.UR https://www.cs.virginia.edu/~smk9u/shiftLab.html
+.UE
+
+.SH DOCUMENTAION
+Complete documentation for PMFuzz can be accessed online at
+.UR https://github.com/Systems-ShiftLab/pmfuzz/wiki
+.UE

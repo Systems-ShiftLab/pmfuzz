@@ -1,0 +1,25 @@
+# Baseline configuration
+
+target:
+  env:
+    # Disable the forkserver and 
+    AFL_NO_FORKSRV: "1"
+    PRIMITIVE_BASELINE_MODE: "1"
+    
+  tmout: "500"
+  
+pmfuzz:
+  progress_file: "/tmp/baseline.log"
+  stage:
+    "1":
+      cores: 38
+    "2":
+      enable: No
+
+    dedup:
+      global:
+        fdedup: No
+        minimize_tc: No
+        minimize_corpus: Yes
+      local:
+        minimize_tc: No      

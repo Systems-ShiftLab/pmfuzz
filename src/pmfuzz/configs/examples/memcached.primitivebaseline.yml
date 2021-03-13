@@ -1,0 +1,10 @@
+# Brief:
+#   Runs the baseline for memcached
+
+include:
+  - configs/base.yml
+  - configs/workload/memcached.yml
+  - configs/run_configs/primitivebaseline.yml
+
+target:
+  tmout: "2500" # ms

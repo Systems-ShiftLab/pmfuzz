@@ -1,0 +1,17 @@
+# Baseline configuration
+
+pmfuzz:
+  progress_file: "/tmp/baseline.log"
+  stage:
+    "1":
+      cores: 38
+    "2":
+      enable: No
+
+    dedup:
+      global:
+        fdedup: No
+        minimize_tc: No
+        minimize_corpus: Yes
+      local:
+        minimize_tc: No      

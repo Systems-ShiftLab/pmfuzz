@@ -1,0 +1,27 @@
+# Brief:
+#   Configures binary for vendor/redis-3.2-nvml
+
+target:
+  env:
+    PMEM_IS_PMEM_FORCE: "1"
+    LD_PRELOAD:         "%LIB%/libdesock.so:%LIB%/libdetime.so:%LIB%/libderand.so"
+    LD_LIBRARY_PATH:    "/usr/local/lib64/"
+  
+  cmd:                  "%BIN%/redis-server %ROOT%/vendor/redis-3.2-nvml/redis.conf --pmfile  __POOL_IMAGE__ 8mb"
+
+  persist_enable_env:   USE_FAKE_MMAP=0
+  persist_disable_env:  USE_FAKE_MMAP=1
+
+  empty_img:
+    stdin: "shutdown"
+
+  tmout: "1500" # ms
+
+pmfuzz:
+  failure_injection: 
+    test_with: "%ROOT%/inputs/redis/5.txt"
+    img_gen_mode:
+      dont_create_env:
+        LD_PRELOAD              : "%LIB%/libdetime.so:%LIB%/libdesrand.so:%LIB%/libdesock.so:"
+      create_env:
+        LD_PRELOAD              : "%LIB%/libdetime.so:%LIB%/libdesrand.so:%LIB%/libdesock.so:"

@@ -1,0 +1,76 @@
+#! /usr/bin/env python3
+
+""" 
+@file       cp-map
+@details    Creates a tuple file for afl-cmin using a binary bitmap
+@copyright  2020-21 PMFuzz Authors
+
+SPDX-license-identifier: BSD-3-Clause
+"""
+
+import argparse
+import bitarray
+import numpy as np
+import os
+import sys
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description='Copies map for a testcase as a tuple list.'
+    )
+
+    parser.add_argument(
+        'input_f', 
+        type=str, 
+        help='Input file to generate the map for',
+    )
+    parser.add_argument(
+        'output_f',
+        type=str, 
+        help='Destination file for the tuple',
+    )
+    parser.add_argument(
+        '-m', 
+        dest='maps_dir', 
+        type=str, 
+        default=None,
+        help='Directory containing the maps, default: same as input directory',
+    )
+
+    args = parser.parse_args()
+
+    if args.maps_dir == None:
+        args.maps_dir = os.path.dirname(args.input_f)
+
+    return args
+
+def main():
+    args = parse_args()
+
+    in_fname = os.path.basename(args.input_f)
+    mapname = 'map_' + in_fname
+    map_f = os.path.join(args.maps_dir, mapname)
+
+    with open(map_f, 'rb') as obj, open(args.output_f, 'w') as obj2:
+        arr = bitarray.bitarray()
+        arr.fromfile(obj)
+        arr = arr.tobytes()
+        
+        cnt = 0
+        for i in range(len(arr)):
+            if arr[i] != 0:
+                val = int(np.log2(arr[i]))+1
+                obj2.write("%u%u\n" % (val, i))
+                cnt += 1
+            # iter += 1
+
+            # if iter > 64*1024*8:
+            #     print('Iter %d is too large' % iter)
+            #     exit(1)
+    # print('Total tuples: %d' % cnt)
+if __name__ == '__main__':
+    main()
+else:
+    print('Cannot import %s as library' % sys.argv[0])
+    exit(1)

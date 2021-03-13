@@ -1,0 +1,7 @@
+# Brief:
+#   Runs the Baseline for rtree
+
+include:
+  - configs/base.yml
+  - configs/workload/mapcli.rtree.yml
+  - configs/run_configs/completeslow.yml

@@ -1,0 +1,50 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: PMFuzz
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    
+    runs-on: ubuntu-20.04
+
+    env:
+      PIN_ROOT: /tmp/pin-3.18-98332-gaebd7b1e6-gcc-linux
+    
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Install python headers
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3.8-dev
+        sudo apt-get install -y gcc g++ gfortran libopenblas-dev liblapack-dev build-essential libtinfo5
+
+    - name: Setup pin
+      run: |
+        wget 'https://software.intel.com/sites/landingpage/pintool/downloads/pin-3.18-98332-gaebd7b1e6-gcc-linux.tar.gz'
+        tar xzf pin-3.18-98332-gaebd7b1e6-gcc-linux.tar.gz
+
+    - name: Build everything
+      run: |
+        make -j 2
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 pytest
+        pip install -r src/pmfuzz/requirements.txt
+
+    - name: Test with make check
+      run: |
+        make check

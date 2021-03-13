@@ -1,0 +1,26 @@
+# Brief:
+#   Configures binary for vendor/memcached-pmem
+
+target:
+  env:
+    PMEM_IS_PMEM_FORCE: "1"
+    LD_PRELOAD:         "%LIB%/libdesock.so:%LIB%/libdetime.so:%LIB%/libdesrand.so"
+    LD_LIBRARY_PATH:    "/usr/local/lib64/"
+  
+  cmd:                  "%BIN%/memcached -A -p 11211 -m 0 -j __POOL_IMAGE__ -o pslab_force"
+
+  persist_enable_env:   USE_FAKE_MMAP=0
+  persist_disable_env:  USE_FAKE_MMAP=1
+
+  empty_img:
+    stdin: "shutdown"
+  tmout:    "1500"   # ms
+
+pmfuzz:
+  failure_injection: 
+    test_with: "%ROOT%/inputs/memcached/1.txt"
+    img_gen_mode:
+      dont_create_env:
+        LD_PRELOAD              : "%LIB%/libdetime.so:%LIB%/libdesrand.so:%LIB%/libdesock.so:"
+      create_env:
+        LD_PRELOAD              : "%LIB%/libdetime.so:%LIB%/libdesrand.so:%LIB%/libdesock.so:"

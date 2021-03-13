@@ -1,0 +1,6 @@
+#define PMFUZZ_NAME     "PMFuzz"
+#define PMFUZZ_VERSION  "1.0"
+#define PMFUZZ_AUTHORS  "ShiftLab"
+#define PMFUZZ_INFO_LN  "PMFuzz v1.0 by "
+#define PMFUZZ_BUG_LOC  "https://github.com/Systems-ShiftLab/pmfuzz/issues"
+#define PMFUZZ_WEBSITE  "https://github.com/Systems-ShiftLab/pmfuzz"

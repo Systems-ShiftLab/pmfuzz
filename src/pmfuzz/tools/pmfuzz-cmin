@@ -1,0 +1,196 @@
+#! /usr/bin/env python3
+
+""" 
+@file       pmfuzz-cmin
+@details    Creates a tuple file for afl-cmin using a binary bitmap
+@copyright  2020-21 PMFuzz Authors
+
+SPDX-license-identifier: BSD-3-Clause
+"""
+
+import argparse
+import hashlib
+import numpy as np
+import os
+import sys
+
+from os import path
+from shutil import copy2
+
+MEM_LIMIT=100
+SZ_8_MIB = 2**23
+
+def fatal(msg, exitcode=1):
+    print('FATAL: ' + msg)
+    exit(exitcode)
+
+def md5sum(fname, block_size=SZ_8_MIB):
+    with open(fname, 'rb') as f:
+        md5 = hashlib.md5()
+        while True:
+            data = f.read(block_size)
+            if not data:
+                break
+            md5.update(data)
+        return md5.digest().hex()
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description='Corpus minimizer for deep path.'
+    )
+
+    parser.add_argument(
+        '-i',
+        dest='in_dir', 
+        type=str, 
+        help='input directory with the starting corpus',
+        required=True,
+    )
+    parser.add_argument(
+        '-o',
+        dest='out_dir',
+        type=str, 
+        help='output directory for minimized files',
+        required=True,
+    )
+    parser.add_argument(
+        '-f', 
+        dest='stdin_file', 
+        type=str, 
+        default=None,
+        help='(ignored) location read by the fuzzed program (stdin)',
+    )
+    parser.add_argument(
+        '-m', 
+        dest='mem_limit', 
+        type=str, 
+        default=None,
+        help=f'(ignored) memory limit for child process ({MEM_LIMIT} MB)',
+    )
+    parser.add_argument(
+        '-M', 
+        dest='map_dir', 
+        type=str, 
+        default=None,
+        help='directory for mapping file name to command',
+        required=True,
+    )
+    parser.add_argument(
+        '-c', 
+        dest='cp_map', 
+        type=str, 
+        default=None,
+        help='(ignored) path to python script to copy map',
+    )
+    parser.add_argument(
+        '-t', 
+        dest='timeout', 
+        type=str, 
+        default=None,
+        help='(ignored) run time limit for child process (none)',
+    )
+    parser.add_argument(
+        '-e', 
+        dest='extra_par_e', 
+        action='store_true',
+        default=None,
+        help='(ignored) solve for edge coverage only, ignore hit counts',
+    )
+    parser.add_argument(
+        '-C', 
+        dest='afl_cmin_crashes_only', 
+        action='store_true',
+        default=None,
+        help='(ignored) keep crashing inputs, reject everything else',
+    )
+    parser.add_argument(
+        '-Q', 
+        dest='qemu_mode', 
+        action='store_true',
+        default=None,
+        help='(ignored) use binary-only instrumentation (QEMU mode)',
+    )
+    parser.add_argument(
+        'target',
+        nargs='*',  
+        metavar='',
+        action='store',
+        default=None,
+        help='(ignored) target program',
+    )
+
+    args = parser.parse_args()
+
+    DISABLED = ['stdin_file', 'mem_limit', 'cp_map', 'timeout', 'qemu_mode',
+        'afl_cmin_crashes_only', 'extra_par_e']
+    for arg, val in vars(args).items():
+        if arg in DISABLED and val != None:
+            print(f'Argument {arg} ignored')
+
+    return args
+
+def main():
+    args = parse_args()
+
+    if not os.path.isdir(args.in_dir):
+        fatal(f'{args.in_dir} is not a directory.')
+    if not os.path.isdir(args.out_dir):
+        fatal(f'{args.out_dir} is not a directory.')
+    if not os.path.isdir(args.map_dir):
+        fatal(f'{args.map_dir} is not a directory.')
+
+    # Calc hashes
+    hash2filename = {}
+    filename2hash = {}
+    duplicate_files = []
+    
+    count = 0
+    for fname in os.listdir(args.map_dir):
+        if not fname in ['.state'] and 'pm_map' in fname:
+            fpath = path.join(args.map_dir, fname)
+            hashv = md5sum(fpath)
+
+            if hashv not in hash2filename:
+                hash2filename[hashv] = []
+
+            hash2filename[hashv].append(fname)
+            filename2hash[fname] = hashv
+            count += 1
+    
+    print(f'Total {count} files read')
+
+    # Find duplicate files
+    for hashv in hash2filename:
+        if len(hash2filename[hashv]) > 1:
+            duplicate_files += hash2filename[hashv][1:]
+
+    print('Duplicates Found:')
+    for file in duplicate_files:
+        print(f'\t{file}')
+
+    notcopy_list = []
+    for file in duplicate_files:
+        notcopy_list += [
+            file,
+            file.replace('pm_map_', '').replace('map_', '')
+        ]
+
+    print('Not copying following files:')
+    print(notcopy_list)
+
+    for fname in os.listdir(args.in_dir):
+        fpath = path.join(args.in_dir, fname)
+
+        src = fpath
+        dst = path.join(args.out_dir, fname)
+
+        if fname not in notcopy_list and fname not in ['.state']:
+            copy2(src, dst)
+        else:
+            print(f'Skipped: {fname}')
+
+if __name__ == '__main__':
+    main()
+else:
+    print('Cannot import %s as library' % sys.argv[0])
+    exit(1)

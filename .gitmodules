@@ -1,0 +1,6 @@
+[submodule "vendor/AFL"]
+	path = vendor/AFL
+	url = git@github.com:sihangliu/AFL.git
+[submodule "vendor/preeny"]
+	path = vendor/preeny
+	url = https://github.com/zardus/preeny.git
