@@ -1,0 +1,11 @@
+# Brief:
+#   Runs the baseline AFL for redis
+
+include:
+  - configs/base.yml
+  - configs/workload/redis.yml
+  - configs/run_configs/primitivebaseline.yml
+
+target:
+  tmout: "2500" # ms
+  mlimit: "3000"

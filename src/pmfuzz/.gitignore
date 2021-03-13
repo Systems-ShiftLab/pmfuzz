@@ -1,0 +1,7 @@
+__pycache__/
+venv/
+docs/
+log.html
+log.pdf
+progress.*
+.afl-tmin-temp-*

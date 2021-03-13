@@ -1,0 +1,7 @@
+# Brief:
+#   Runs the PMfuzz for redis
+
+include:
+  - configs/base.yml
+  - configs/workload/redis.yml
+  - configs/run_configs/completeunfocused.yml

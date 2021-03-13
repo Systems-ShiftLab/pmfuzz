@@ -1,0 +1,7 @@
+# Brief:
+#   Runs the Baseline for btree
+
+include:
+  - configs/base.yml
+  - configs/workload/mapcli.btree.yml
+  - configs/run_configs/primitivebaseline.yml

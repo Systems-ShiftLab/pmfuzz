@@ -1,0 +1,7 @@
+# Brief:
+#   Runs the Baseline for skiplist
+
+include:
+  - configs/base.yml
+  - configs/workload/mapcli.skiplist.yml
+  - configs/run_configs/completeunfocused.yml

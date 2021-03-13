@@ -1,0 +1,153 @@
+# SPDX-license-identifier: BSD-3-Clause
+
+# File:
+#   default.yaml
+# Brief:
+#   Base YAML file for configuring PMFuzz
+# Copyright
+#   2020-21 University of Virginia
+# Details:
+#   Contains all the default configuration for running PMFuzz, makes easier
+#   for other configurations to be derived from this. Include this config in
+#   other files by adding the following entry:
+#     include:
+#       - base-config-1.yaml
+#       - base-config-2.yaml
+#       .
+#       - base-config-n.yaml
+#   In case of duplicated keys, values are prioritized (and overwrite) in 
+#   the order in which they appear with the file including them having highest
+#   priority.
+# Variables:
+#   The following variables are automatically subtituted:
+#     %ROOT%:   Points to the PMFuzz root director
+#     %BUILD%:  Points to the %ROOT%/build/
+#     %LIB%:    Points to the %ROOT%/build/lib
+#     %BIN%:    Points to the %ROOT%/build/bin
+# Warning:
+#   Includes are not recursive, and expand only up to one level
+ 
+
+# Configure PMFuzz
+pmfuzz:
+  # Force responses to questions in pmfuzz
+  force_resp: "y"
+  
+  # Progress recording
+  progress_interval: 1 # sec
+  progress_file: "/tmp/long.log.stage-1"
+
+  # Directory containing all needed binaries
+  bin_dir:  "%BIN%"
+
+  # Location to save images, 
+  # TODO: Implement this
+  img_loc: "/mnt/pmem0"
+
+  stage:
+    "1":
+      cores: 30
+
+    "2":
+      enable: Yes
+      cores: 10
+
+      # Total time to run fuzzer with an input image
+      tc_timeout:  600 # sec
+
+      # Only select the testcases with following id in them, e.g., with only
+      # [1, 2], the following cases would qualify:
+      #   id=1.testcase
+      #   id=2.testcase
+      #   id=1,id=2.testcase
+      # But, the following would notL:
+      #   id=2.testcase
+      #   id=1,id=3.testcase
+      #   id=3,id=1.testcase
+      #select_ids: [1, 25, 50, 75, 100, 250, 500, 750, 1000, 10000]
+  
+    # Configure deduplication for stage 1 and 2
+    dedup:
+      # Hints:
+      # Minimize TC uses afl-tmin
+      # Minimize corpus uses afl-cmin
+      global:
+        # Possible options for fdedup:
+        # 1. map: Minimizes based on duplicate execution map
+        # 2. pm_map: Minimizes based on duplicated pm map
+        # 3. No: Disables file based deduplication
+        fdedup: No
+        minimize_tc: Yes
+        minimize_corpus: No
+      local:
+        # fdedup is currently always enabled for local
+        minimize_tc: Yes # TODO: 'No' version not implemented
+        minimize_corpus: Yes
+      
+  failure_injection: 
+    enable: No
+
+    # A testcase that would be run on the generated crash sites to see if the 
+    # crash sites work
+    test_with: 'None'
+    
+    # For Generating crash images
+    img_gen_mode:
+      # When a new image is *not* created
+      dont_create_env: {
+        USE_FAKE_MMAP           : "1",
+        FI_MODE                 : IMG_GEN,
+        FAILURE_LIST            : /dev/null,
+        PMFUZZ_DEBUG            : "1",
+        ENABLE_CNST_IMG         : "1",
+        LD_LIBRARY_PATH         : "/usr/local/lib64",
+      }
+      # When a new image *is* created
+      create_env: {
+        GEN_ALL_CS         : "1",
+        USE_FAKE_MMAP           : "0",
+        FI_MODE                 : IMG_GEN,
+        FAILURE_LIST            : /dev/null,
+        PMFUZZ_DEBUG            : "1",
+        ENABLE_CNST_IMG         : "1",
+        LD_LIBRARY_PATH         : "/usr/local/lib64",
+      }
+
+# Configure the fuzzing target
+target:
+  env:
+    PMEM_IS_PMEM_FORCE: "1"
+
+  # Complete command for the target program
+  cmd:                  "%ROOT%/vendor/pmdk/src/examples/libpmemobj/map/mapcli hashmap_tx /mnt/tmpfs/__POOL_IMAGE__ 0"
+
+  # Environment variable to enable/disable persistence of PM image
+  persist_enable_env:   USE_FAKE_MMAP=0
+  persist_disable_env:  USE_FAKE_MMAP=1
+
+  # Time and memory limits for the target, used for both afl and image
+  # generation
+  tmout:    "150"   # ms
+  mlimit:   "1500" # MiB
+
+# Configure AFL
+afl:
+
+  cpmap: "%ROOT%/src/pmfuzz/tools/cp-map"
+  cmin: "%ROOT%/src/pmfuzz/tools/pmfuzz-cmin"
+
+  # Prioritizing PM paths gives any new found PM path longer air time compared
+  # to other non-PM execution paths
+  prioritize_pm_path: 
+    enable: No
+    env:
+      enable:   DONT_PRIORITIZE_PM_PATH=0
+      disable:  DONT_PRIORITIZE_PM_PATH=1
+
+# Configure coverage reporting
+lcov:
+  enable: Yes
+  empty_img: "/mnt/pmem0/__empty_img__"
+  source_code_dirs: 
+    - "%ROOT%/vendor/pmdk/src/"
+  options: [ "--no-checksum", "--ignore-errors", "source" ]

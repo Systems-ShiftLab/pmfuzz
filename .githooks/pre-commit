@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+
+echo -n 'PMFuzz tests: '
+python3 src/pmfuzz/pmfuzz-tests.py
+
+retVal=$?
+
+if [ $retVal -ne 0 ]; then
+    echo -e "\n\nPMFuzz: Unable to commit, test(s) failed."
+fi
+
+exit $retVal

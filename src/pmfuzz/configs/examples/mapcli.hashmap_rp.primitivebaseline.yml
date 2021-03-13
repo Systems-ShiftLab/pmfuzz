@@ -1,0 +1,7 @@
+# Brief:
+#   Runs the Baseline for hashmap_rp
+
+include:
+  - configs/base.yml
+  - configs/workload/mapcli.hashmap_rp.yml
+  - configs/run_configs/primitivebaseline.yml

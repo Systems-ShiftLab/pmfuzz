@@ -1,0 +1,7 @@
+# Brief:
+#   Runs the PMFuzz for memcached
+
+include:
+  - configs/base.yml
+  - configs/workload/memcached.yml
+  - configs/run_configs/complete.yml

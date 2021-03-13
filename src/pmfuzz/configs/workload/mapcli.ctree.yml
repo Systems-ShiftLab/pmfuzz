@@ -1,0 +1,24 @@
+# Brief:
+#   Configures binary for PMDK/mapcli/hashmap_tx
+
+target:
+  env:
+    PMEM_IS_PMEM_FORCE: "1"
+    LD_LIBRARY_PATH:    "/usr/local/lib64/"
+  cmd:                  "%ROOT%/vendor/pmdk/src/examples/libpmemobj/map/mapcli ctree __POOL_IMAGE__ 0"
+  persist_enable_env:   USE_FAKE_MMAP=0
+  persist_disable_env:  USE_FAKE_MMAP=1
+
+pmfuzz:
+  failure_injection: 
+    test_with: "%ROOT%/inputs/mapcli_inputs/4.txt" 
+    img_gen_mode:
+      env: {
+        USE_FAKE_MMAP           : "1",
+        FI_MODE                 : IMG_GEN,
+        FAILURE_LIST            : /dev/null,
+        PMFUZZ_DEBUG            : "1",
+        ENABLE_CNST_IMG         : "1",
+        LD_LIBRARY_PATH         : "/usr/local/lib64",
+        LD_PRELOAD              : "%LIB%/libdetime.so:%LIB%/libdesrand.so:",
+      }

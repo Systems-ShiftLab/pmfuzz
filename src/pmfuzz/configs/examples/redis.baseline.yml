@@ -1,0 +1,7 @@
+# Brief:
+#   Runs the baseline AFL for redis
+
+include:
+  - configs/base.yml
+  - configs/workload/redis.yml
+  - configs/run_configs/baseline.yml
