@@ -167,7 +167,7 @@ gen-afl-links:
 $(LLVM_DIR):
 	@printf '  %b %b\n' $(MAKECOLOR)MAKE$(ENDCOLOR) $(BINCOLOR)$@$(ENDCOLOR)
 	@echo 'Donwloading LLVM'
-	wget -P $(BUILD_DIR) -c \
+	wget -P $(BUILD_DIR) \
 		'https://releases.llvm.org/9.0.0/clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz'
 	mkdir -p $(LLVM_DIR)
 	tar -C $(LLVM_DIR) --strip-components=1 -xf \
@@ -241,7 +241,9 @@ docs:
 install:
 	@printf '  %b %b\n' $(MAKECOLOR)MAKE$(ENDCOLOR) $(BINCOLOR)$@$(ENDCOLOR)
 
-	cp $(DIR)docs/manpages/pmfuzz-fuzz.1 /usr/local/share/man/man1/
+	cp $(DIR)docs/manpages/*.1 /usr/local/share/man/man1/
+	cp $(DIR)docs/manpages/*.7 /usr/local/share/man/man7/
+	ln -fs /usr/local/share/man/man7/libpmfuzz.7 /usr/local/share/man/man7/libfakepmfuzz.7
 
 	cp $(LIBS_DIR)libpmfuzz.so /usr/local/lib/libpmfuzz.so.1.0.0
 	ln -fs /usr/local/lib/libpmfuzz.so.1.0.0 /usr/local/lib/libpmfuzz.so.1.0 
@@ -270,7 +272,10 @@ install:
 #BRIEF: Uninstalls PMFuzz to system path
 uninstall:
 	@printf '  %b %b\n' $(MAKECOLOR)MAKE$(ENDCOLOR) $(BINCOLOR)$@$(ENDCOLOR)
-	rm -f /usr/local/share/man/man1/pmfuzz-fuzz.1
+	rm -f /usr/local/share/man/man1/pmfuzz-fuzz.1 \
+		/usr/local/share/man/man7/libpmfuzz.7 \
+		/usr/local/share/man/man7/libfakepmfuzz.7
+
 	rm -f /usr/local/lib/libpmfuzz.so.1.0.0
 	rm -f /usr/local/lib/libpmfuzz.so.1.0
 	rm -f /usr/local/lib/libpmfuzz.so.1

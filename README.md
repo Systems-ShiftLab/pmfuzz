@@ -59,9 +59,57 @@ Now, pmfuzz-fuzz should be available as an executable:
 pmfuzz-fuzz --help
 ```
 
+The following man pages are also installed:
+```
+man 1 pmfuzz-fuzz
+man 7 libpmfuzz
+man 7 libfakepmfuzz
+```
+
+To uninstall PMFuzz, run the following command:
+```
+sudo make uninstall
+```
+
+## Using PMFuzz
+After installing PMFuzz, use annotations by including the PMFuzz
+header file:
+
+```c
+#include "pmfuzz/pmfuzz.h"
+
+int main() {
+	printf("PMFuzz version: %s\n", pmfuzz_version_str);
+}
+```
+
+The program would then have to be linked with either libpmfuzz or
+libfakepmfuzz. e.g.,
+
+```makefile
+example: example.o
+	$(CXX) -o $@ $< -lfakepmfuzz
+```
+
+To compile a program linked with `libpmfuzz`, you'd need to use
+AFL++'s version of gcc. For debugging, `libfakepmfuzz` exports the
+same interface but no actual tracking mechanism, allowing it to
+compile with any C/C++ compiler.
+
+An example program is available in [src/example](src/example). The
+original ASPLOS 2021 artifact is available at
+[https://github.com/Systems-ShiftLab/pmfuzz_asplos21_ae](pmfuzz_asplos21_ae).
+
+`libpmfuzz` API is available at [docs/libpmfuzz.7.md](docs/libpmfuzz.7.md)
+
+
 ## Compiling Documentation
 Run `make docs` from the root, and all the documentation will be
 linked in the `docs/` directory.
+
+Some man pages are available as markdown formatted files:
+1. [docs/libpmfuzz.7.md](docs/libpmfuzz.7.md)
+2. [docs/pmfuzz-fuzz.1.md](docs/pmfuzz-fuzz.1.md)
 
 ## Running custom configuration
 PMFuzz uses a YML based configuration to set different parameters for
