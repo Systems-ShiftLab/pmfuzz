@@ -16,7 +16,8 @@ jobs:
 
     env:
       PIN_ROOT: /tmp/pin-3.18-98332-gaebd7b1e6-gcc-linux
-    
+      LLVM_CONFIG: build/llvm-9/bin/llvm-config
+      
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.8
