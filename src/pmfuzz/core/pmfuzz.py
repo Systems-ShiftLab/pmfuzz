@@ -157,7 +157,9 @@ def run_stage2(indir:str, outdir:str, cfg, cores:int,
             dedup_cfg = cfg['pmfuzz']['stage']['dedup']
             run_dedup(stage, iter_id, indir, outdir, cfg, cores, 
                         verbose, force_yes, dry_run, 
-                        min_corpus=dedup_cfg['global']['minimize_corpus'])
+                        min_corpus=dedup_cfg['global']['minimize_corpus'],
+                        min_tc=dedup_cfg['global']['minimize_tc'],
+                        )
             stage2.clear()
             
             # Create a new stage 2 object for next iteration

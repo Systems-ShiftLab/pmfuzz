@@ -640,9 +640,9 @@ class Dedup(Stage):
                 printv('Deduplication global testcase')
             testcases_path, _ = map(list, zip(*self.global_dedup_list_tc))
             
-            if self.cfg('pmfuzz.dedup.global.fdedup') == 'pm_map':
+            if self.cfg('pmfuzz.stage.dedup.global.fdedup') == 'pm_map':
                 DedupEngine(testcases_path, self.verbose, nh.is_pm_map).run()
-            elif self.cfg('pmfuzz.dedup.global.fdedup') == 'map':
+            elif self.cfg('pmfuzz.stage.dedup.global.fdedup') == 'map':
                 DedupEngine(testcases_path, self.verbose, nh.is_map).run()
 
         if min_tc:

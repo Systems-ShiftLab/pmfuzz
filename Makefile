@@ -105,11 +105,11 @@ export AFL_PATH		= $(AFL_DIR)
 #HEADER: Targets
 #BRIEF: Builds everything
 all:
+	$(MAKE) builddir
 	$(MAKE) basic
 
 basic: afl preeny trace-functs
 	@printf '  %b %b\n' $(MAKECOLOR)MAKE$(ENDCOLOR) $(BINCOLOR)$@$(ENDCOLOR)
-	$(MAKE) builddir
 	@echo $(DIR)
 
 ##
