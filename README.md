@@ -2,7 +2,7 @@
 
 # PMFuzz
 
-PMFuzz is a testcase generation tool to generate high-value tests cases for PM testing tools (XFDetector, PMDebugger
+PMFuzz is a testcase generation tool to generate high-value tests cases for PM testing tools (XFDetector, PMDebugger, PMTest and Pmemcheck)
 
 If you find PMFuzz useful in your research, please cite:
 
