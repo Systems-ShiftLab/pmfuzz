@@ -88,11 +88,13 @@ libfakepmfuzz. e.g.,
 
 ```makefile
 example: example.o
-	$(CXX) -o $@ $< -lfakepmfuzz
+	$(CXX) -o $@ $< -lfakepmfuzz # or -lpmfuzz
 ```
 
 To compile a program linked with `libpmfuzz`, you'd need to use
-AFL++'s version of gcc. For debugging, `libfakepmfuzz` exports the
+PMFuzz's AFL++ version of gcc/clang. Check `build/bin` after building PMFuzz.
+
+For debugging, `libfakepmfuzz` exports the
 same interface but no actual tracking mechanism, allowing it to
 compile with any C/C++ compiler.
 
@@ -118,6 +120,11 @@ existing examples in [src/pmfuzz/configs/examples/][config_examples]
 directory.
 
 More information on PMFuzz's syntax is [here][1].
+
+## Modifying PMFuzz
+PMFuzz was written in a modular way allowing part of PMFuzz's components to be 
+swapped with something that has the same interface. If you have a question
+please open a new issue or a discussion.
 
 ## Other useful information
 ### Env variables
