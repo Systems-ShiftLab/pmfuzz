@@ -16,7 +16,6 @@ failure_list.txt
 out
 
 build/
-6000.cmd
 *.gcno
 *.gcda
 
