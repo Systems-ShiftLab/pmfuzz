@@ -167,7 +167,7 @@ gen-afl-links:
 $(LLVM_DIR):
 	@printf '  %b %b\n' $(MAKECOLOR)MAKE$(ENDCOLOR) $(BINCOLOR)$@$(ENDCOLOR)
 	@echo 'Donwloading LLVM'
-	wget -P $(BUILD_DIR) \
+	wget -nv -P $(BUILD_DIR) \
 		'https://releases.llvm.org/9.0.0/clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz'
 	mkdir -p $(LLVM_DIR)
 	tar -C $(LLVM_DIR) --strip-components=1 -xf \
