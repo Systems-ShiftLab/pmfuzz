@@ -71,6 +71,14 @@ To uninstall PMFuzz, run the following command:
 sudo make uninstall
 ```
 
+## Compiling PMFuzz Docker image
+PMFuzz also comes with a docker image to automatically configure and install pmfuzz. To build the image, run the following command from the root of the repository:
+```shell
+docker build -t pmfuzz-v0.9 .
+```
+
+The raw dockerfile is also available here: [/Dockerfile](Dockerfile).
+
 ## Using PMFuzz
 After installing PMFuzz, use annotations by including the PMFuzz
 header file:
