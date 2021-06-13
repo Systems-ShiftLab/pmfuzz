@@ -72,7 +72,7 @@ sudo make uninstall
 ```
 
 ## Compiling PMFuzz Docker image
-PMFuzz also comes with a docker image to automatically configure and install pmfuzz. To build the image, run the following command from the root of the repository:
+PMFuzz also comes with a docker file to automatically configure and install pmfuzz. To build the image, run the following command from the root of the repository:
 ```shell
 docker build -t pmfuzz-v0.9 .
 ```
