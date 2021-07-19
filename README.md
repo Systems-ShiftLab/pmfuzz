@@ -108,7 +108,7 @@ compile with any C/C++ compiler.
 
 An example program is available in [src/example](src/example). The
 original ASPLOS 2021 artifact is available at
-[https://github.com/Systems-ShiftLab/pmfuzz_asplos21_ae](pmfuzz_asplos21_ae).
+[https://github.com/Systems-ShiftLab/pmfuzz_asplos21_ae](https://github.com/Systems-ShiftLab/pmfuzz_asplos21_ae).
 
 `libpmfuzz` API is available at [docs/libpmfuzz.7.md](docs/libpmfuzz.7.md)
 
